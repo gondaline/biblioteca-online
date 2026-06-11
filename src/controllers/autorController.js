@@ -1,3 +1,4 @@
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import { autor } from "../models/Autor.js";
 
 class AutorController {
@@ -14,10 +15,21 @@ class AutorController {
     static async listarAutorPorId(req, res) {
         try {
             const id = req.params.id;
+
             const autorEncontrado = await autor.findById(id);
-            res.status(200).json(autorEncontrado);
+
+            if (autorEncontrado !== null) {
+                res.status(200).json(autorEncontrado);
+            } else {
+                res.status(404).json({ message: "Id do Autor não localizado." })
+            }
         } catch (erro) {
-            res.status(500).json({ message: `${erro.message} - falha ao consultar autores` })
+
+            if (erro instanceof mongoose.Error.CastError) {
+                res.status(400).send({ message: "Um ou mais dados fornecidos estão incorretos." })
+            } else {
+                res.status(500).json({ message: `${erro.message} - Erro interno do servidor` })
+            }
         }
     }
 

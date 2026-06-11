@@ -59,7 +59,7 @@ class LivroController {
         try {
             const livrosPorEditora = await livro.find({ editora: paramEditora });
             res.status(200).json(livrosPorEditora);
-        } catch (error) {
+        } catch (erro) {
             res.status(500).json({ message: `${erro.message} - falha ao listar editora` })
         }
     }
