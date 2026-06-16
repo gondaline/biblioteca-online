@@ -3,7 +3,7 @@ import livros from "../models/Livro.js";
 class LivroController {
 
     static async listarLivros(req, res, next) {
-        try {
+        try {            
             const listaLivros = await livros.find()
                 .populate("autor")
 
@@ -27,7 +27,7 @@ class LivroController {
 
     static async cadastrarLivro(req, res, next) {
         try {
-            let livro = new livros (req.body);
+            let livro = new livros(req.body);
 
             const livroResultado = await livro.save();
 
