@@ -1,13 +1,14 @@
-import livros from "../models/Livro.js";
+import NaoEncontrado from "../erros/NaoEncontrado.js";
+import { autores, livros } from "../models/index.js";
 
 class LivroController {
 
     static async listarLivros(req, res, next) {
-        try {            
-            const listaLivros = await livros.find()
-                .populate("autor")
+        try {
+            const buscaLivros = livros.find();
+            req.resultado = buscaLivros;
+            next();
 
-            res.status(200).json(listaLivros);
         } catch (erro) {
             next(erro);
         }
@@ -16,10 +17,14 @@ class LivroController {
     static async listarLivroPorId(req, res, next) {
         try {
             const id = req.params.id;
-            const livroEncontrado = await livros.findById(id)
+            const livroResultado = await livros.findById(id)
                 .populate("autor", "nome");
 
-            res.status(200).json(livroEncontrado);
+            if (livroResultado !== null) {
+                res.status(200).send(livroResultado);
+            } else {
+                next(new NaoEncontrado("Id do livro não localizado."));
+            }
         } catch (erro) {
             next(erro);
         }
@@ -37,36 +42,85 @@ class LivroController {
         }
     }
 
-    static async atualizarLivro(req, res, next) {
+    static atualizarLivro = async (req, res, next) => {
         try {
             const id = req.params.id;
-            await livros.findByIdAndUpdate(id, { $set: req.body });
 
-            res.status(200).json({ message: "livro atualizado!" });
+            const livroResultado = await livros.findByIdAndUpdate(id, { $set: req.body });
+
+            if (livroResultado !== null) {
+                res.status(200).send({ message: "Livro atualizado com sucesso" });
+            } else {
+                next(new NaoEncontrado("Id do livro não localizado."));
+            }
         } catch (erro) {
             next(erro);
         }
-    }
+    };
 
     static async deletarLivro(req, res, next) {
         try {
             const id = req.params.id;
-            await livros.findByIdAndDelete(id);
-            res.status(200).json({ message: "livro deletado com sucesso!" });
+
+            const livroResultado = await livros.findByIdAndDelete(id);
+
+            if (livroResultado !== null) {
+                res.status(200).send({ message: "Livro removido com sucesso" });
+            } else {
+                next(new NaoEncontrado("Id do livro não localizado."));
+            }
         } catch (erro) {
             next(erro);
         }
     }
 
-    static async listarLivrosPorEditora(req, res, next) {
-        const paramEditora = req.query.editora;
+    static async listarLivrosPorFiltro(req, res, next) {
         try {
-            const livrosPorEditora = await livros.find({ editora: paramEditora });
-            res.status(200).json(livrosPorEditora);
+            const busca = await processaBusca(req.query);
+
+            if (busca !== null) {
+                const livrosResultado = livros
+                    .find(busca)
+                    .populate("autor");
+
+                req.resultado = livrosResultado;
+                next();
+        
+            } else {
+                res.status(200).send([]);
+            }
+
         } catch (erro) {
             next(erro);
         }
-    }
+    };
 };
+
+async function processaBusca(parametros) {
+    const { editora, titulo, minPaginas, maxPaginas, nomeAutor } = parametros;
+
+    let busca = {};
+
+    if (editora) busca.editora = editora;
+    if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
+
+    if (minPaginas || maxPaginas) busca.paginas = {};
+
+    if (minPaginas) busca.paginas.$gte = minPaginas;
+    if (maxPaginas) busca.paginas.$lte = maxPaginas;
+
+    if (nomeAutor) {
+        const autor = await autores.findOne({ nome: nomeAutor });
+
+        if (autor !== null) {
+            busca.autor = autor._id;
+        } else {
+            busca = null
+        }
+
+    }
+
+    return busca;
+}
 
 export default LivroController;
