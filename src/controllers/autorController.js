@@ -48,7 +48,7 @@ class AutorController {
         try {
             const id = req.params.id;
 
-            const autorResultado = await autores.findByIdAndUpdate(id, req.body);
+            const autorResultado = await autores.findByIdAndUpdate(id, { $set: req.body }, { runValidators: true });
 
             if (autorResultado !== null) {
                 res.status(200).send({ message: "Autor atualizado com sucesso" });
