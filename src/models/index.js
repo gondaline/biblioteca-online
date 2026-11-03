@@ -1,7 +1,7 @@
-import "./validadorGlobal.js"
+import "./globalValidator.js"
 
-import { autores } from "./Autor.js";
-import editoras from "./Editora.js";
-import livros from "./Livro.js";
+import Author from "./Author.js";
+import Publisher from "./Publisher.js";
+import Book from "./Book.js";
 
-export { autores, editoras, livros };
+export { Author, Publisher, Book };

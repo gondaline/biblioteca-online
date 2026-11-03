@@ -1,24 +1,24 @@
 import mongoose from "mongoose";
 
-const editoraSchema = new mongoose.Schema({
-    nome: {
+const publisherSchema = new mongoose.Schema({
+    name: {
         type: String,
         required: [true, "O nome da editora é obrigatório"]
     },
-    pais: {
+    country: {
         type: String
     },
-    anoFundacao: {
+    foundedYear: {
         type: Number,
         validate: {
-            validator: (valor) => {
-                return valor >= 1400 && valor <= new Date().getFullYear();
+            validator: (value) => {
+                return value >= 1400 && value <= new Date().getFullYear();
             },
             message: "O ano de fundação deve estar entre 1400 e o ano atual. Valor fornecido: {VALUE}"
         }
     }
 }, { versionKey: false });
 
-const editoras = mongoose.model("editoras", editoraSchema);
+const Publisher = mongoose.model("publishers", publisherSchema);
 
-export default editoras;
+export default Publisher;

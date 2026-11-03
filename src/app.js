@@ -1,19 +1,19 @@
 import express from "express";
-import connectDataBase from "./config/dbConnect.js";
+import connectDatabase from "./config/dbConnect.js";
 import routes from "./routes/index.js";
-import manipuladorDeErros from "./middlewares/manipuladorDeErros.js";
-import manipulador404 from "./middlewares/manipulador404.js";
+import errorHandler from "./middlewares/errorHandler.js";
+import notFoundHandler from "./middlewares/notFoundHandler.js";
 
-const conexao = await connectDataBase();
+const connection = await connectDatabase();
 
-conexao.on("error", (erro) => console.error("Erro de conexão", erro));
-conexao.once("open", () => console.log("Conexão com o banco feita com sucesso!"));
+connection.on("error", (error) => console.error("Erro de conexão", error));
+connection.once("open", () => console.log("Conexão com o banco feita com sucesso!"));
 
 const app = express();
 routes(app);
 
-app.use(manipulador404);
+app.use(notFoundHandler);
 
-app.use(manipuladorDeErros);
+app.use(errorHandler);
 
 export default app;
