@@ -2,6 +2,8 @@
 
 API REST para gerenciamento de **livros**, **autores** e **editoras**, desenvolvida com Node.js, Express e MongoDB (Mongoose).
 
+> **Deploy na AWS:** esta API foi publicada em uma instância Amazon EC2, com Nginx como proxy reverso, systemd e MongoDB Atlas. O passo a passo, as decisões de segurança e as evidências estão em [docs/deploy-aws.md](docs/deploy-aws.md).
+
 ## Funcionalidades
 
 - CRUD completo de livros, autores e editoras
@@ -22,6 +24,9 @@ API REST para gerenciamento de **livros**, **autores** e **editoras**, desenvolv
 
 ```
 ├── server.js                   # Ponto de entrada: carrega o .env e sobe o servidor
+├── docs/
+│   ├── deploy-aws.md           # Deploy na AWS: passo a passo, segurança e evidências
+│   └── images/                 # Capturas do deploy
 └── src/
     ├── app.js                  # Configuração do Express, conexão com o banco e middlewares
     ├── config/
